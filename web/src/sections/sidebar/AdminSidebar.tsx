@@ -5,6 +5,8 @@ import { usePathname } from "next/navigation";
 import { useSettingsContext } from "@/providers/SettingsProvider";
 import SidebarSection from "@/sections/sidebar/SidebarSection";
 import SidebarWrapper from "@/sections/sidebar/SidebarWrapper";
+import { useSidebarLayout } from "@/layouts/sidebar-layouts";
+import useScreenSize from "@/hooks/useScreenSize";
 import { useIsKGExposed } from "@/app/admin/kg/utils";
 import { useCustomAnalyticsEnabled } from "@/lib/hooks/useCustomAnalyticsEnabled";
 import { useUser } from "@/providers/UserProvider";
@@ -187,6 +189,8 @@ interface AdminSidebarProps {
 }
 
 export default function AdminSidebar({ enableCloudSS }: AdminSidebarProps) {
+  const { folded, onFoldClick } = useSidebarLayout();
+  const { isMobile } = useScreenSize();
   const { kgExposed } = useIsKGExposed();
   const pathname = usePathname();
   const { customAnalyticsEnabled } = useCustomAnalyticsEnabled();
@@ -227,7 +231,10 @@ export default function AdminSidebar({ enableCloudSS }: AdminSidebarProps) {
   const groups = groupBySection(filtered);
 
   return (
-    <SidebarWrapper>
+    <SidebarWrapper
+      folded={isMobile ? folded : undefined}
+      onFoldClick={isMobile ? onFoldClick : undefined}
+    >
       <SidebarBody
         scrollKey="admin-sidebar"
         pinnedContent={

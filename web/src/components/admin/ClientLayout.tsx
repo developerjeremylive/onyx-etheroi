@@ -7,6 +7,10 @@ import { ApplicationStatus } from "@/interfaces/settings";
 import { Button } from "@opal/components";
 import { cn } from "@/lib/utils";
 import { ADMIN_ROUTES } from "@/lib/admin-routes";
+import { useAppSidebarContext } from "@/providers/AppSidebarProvider";
+import useScreenSize from "@/hooks/useScreenSize";
+import { SvgSidebar } from "@opal/icons";
+import { Sidebar } from "@/layouts/sidebar-layouts";
 
 export interface ClientLayoutProps {
   children: React.ReactNode;
@@ -51,6 +55,8 @@ const SETTINGS_LAYOUT_PREFIXES = [
 export function ClientLayout({ children, enableCloud }: ClientLayoutProps) {
   const pathname = usePathname();
   const settings = useSettingsContext();
+  const { setFolded } = useAppSidebarContext();
+  const { isMobile } = useScreenSize();
 
   // Certain admin panels have their own custom sidebar.
   // For those pages, we skip rendering the default `AdminSidebar` and let those individual pages render their own.
@@ -82,7 +88,9 @@ export function ClientLayout({ children, enableCloud }: ClientLayoutProps) {
         <div className="flex-1 min-w-0 min-h-0 overflow-y-auto">{children}</div>
       ) : (
         <>
-          <AdminSidebar enableCloudSS={enableCloud} />
+          <Sidebar>
+            <AdminSidebar enableCloudSS={enableCloud} />
+          </Sidebar>
           <div
             data-main-container
             className={cn(
@@ -90,6 +98,15 @@ export function ClientLayout({ children, enableCloud }: ClientLayoutProps) {
               !hasOwnLayout && "py-10 px-4 md:px-12"
             )}
           >
+            {isMobile && (
+              <div className="p-2">
+                <Button
+                  prominence="internal"
+                  icon={SvgSidebar}
+                  onClick={() => setFolded(false)}
+                />
+              </div>
+            )}
             {children}
           </div>
         </>
